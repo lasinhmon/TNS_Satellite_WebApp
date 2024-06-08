@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\ProductionUnitCode\Models\BankAccountByDepartment_Record.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Models\BankAccountHistory_Report.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Models\BankAccount_Record.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Models\Categories_AccessData.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Models\KPI_Department_AccessData - Copy.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\CustomerReport.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\CustomersOfDepartment.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\Department.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\Employee.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\ProcessForDeparments.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\ProcessForEmployee.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\ReportByMonth.cshtml.cs" />
+    <Compile Remove="Areas\ProductionUnitCode\Pages\ReportByYear.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Areas\ProductionUnitCode\Pages\CustomerReport.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\CustomersOfDepartment.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\Department.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\Employee.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\ProcessForDeparments.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\ProcessForEmployee.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\ReportByMonth.cshtml" />
+    <Content Remove="Areas\ProductionUnitCode\Pages\ReportByYear.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="32.0.3" />
+    <PackageReference Include="EPPlus" Version="7.0.1" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TNS.DBConnection\TNS.DBConnection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="TNS.Auth">
+      <HintPath>..\DLL\TNS.Auth.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\ProductionUnitCode\Pages\_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\ProductionUnitCode\Pages\_ViewStart.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+
+
+</Project>

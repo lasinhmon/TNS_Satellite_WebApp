@@ -1,0 +1,721 @@
+﻿@page
+@model TNS_AGR.Areas.ProductionUnitCode.Pages.CropSeasonModel
+@{
+}
+<div style="width:100%; margin:-20px 0 0 -20px">
+    <div style="padding:5px; font-weight:bold; font-size:13px">
+        <a href="~/Index" style="text-decoration:none; color:#4c4c4c">Home</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="#" style="text-decoration:none; color:#4c4c4c">Quản lý vùng trồng</a>
+        <span class="uil-angle-double-right"></span>
+        <span style="color:maroon">Theo cây trồng </span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-7">
+         <div class="card">
+            <canvas id="Chart_View" height="200"></canvas>
+         </div>
+         <div class="card">
+            <canvas id="Chart_View_Country" height="200"></canvas>
+         </div>
+     </div>
+     <div class="col-2">
+         <div class="card" style="height:250px">
+            <canvas id="Chart_KPI_Year" height="200"></canvas>
+        </div>
+     </div>
+     <div class="col-3" style="font-size:14px">
+        <div class="row">
+            <div class="input-group" style="padding-left:0; padding-right:0">
+                <input id="txt_Search" type="text" class="form-control w-25" placeholder="Tìm kiếm mã số" aria-label="Tìm kiếm" aria-describedby="button-addon2">
+                <button class="btn btn-primary" onclick="btn_Search_Click()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center bg-success" style="font-weight:bold; color:white; padding:5px">
+            THỐNG KÊ THEO
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Tỉnh</div>
+            <div class="col-8">
+                 <select id="Provinces" class="form-select w-100">
+                    <option value="">Chọn tỉnh</option>
+                    @foreach (string[] zItem in Model.DataOfProvinces)
+                    {
+                        <option value="@zItem[0]">@zItem[1]</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Huyện</div>
+            <div class="col-8">
+                <select id="District" class="form-select w-100">
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Cây Trồng</div>
+            <div class="col-8">
+                <select id="Commodity" class="form-select w-100">
+                  
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Thị trường</div>
+            <div class="col-8">
+                <select id="Country" class="form-select w-100">
+
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Trạng thái</div>
+            <div class="col-8">
+                <select id="Status" class="form-select w-100">
+                  
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+       
+        <div style="height:15px"></div>
+        <div class="row justify-content-center">
+            <button id="btn_Search" class="btn btn-primary w-50" onclick="btn_Map()">
+                <i class="fas uil-map"></i>
+            </button>
+            <button id="btn_Search" class="btn btn-primary w-50" onclick="btn_Search_Click()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+
+        <div class="row align-items-center">
+        </div>
+    </div>
+</div
+<br />
+<div class="row">
+            <table id="LV_Datatable" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; font-size:13px; ">
+                <thead id="LV_DataHeader">
+                  
+                </thead>
+
+                <tbody id="LV_DataBody">
+                </tbody>
+
+            </table>
+            <div class="row ">
+                <div class="col-9 text-center">
+                    <div id="PageNumberView" class="btn-group me-2" role="group" aria-label="First group">
+                    </div>
+                </div>
+                <div class="col-3 text-center">
+                   
+                </div>
+            </div>
+            <div id="LV_Waiting" style="display:none">
+                <div class='text-center'>
+                    <div class='spinner-border text-primary m-5' role='status'>
+                        <span class='sr-only'>Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<div id="Modal_Area" class="modal-dialog  modal-dialog-right">
+    <div class="modal fade" id="Modal_Popup_Form" tabindex="-1" aria-labelledby="Modal_Selected_Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Modal_Popup_Title">Kiểm tra thông tin </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="Modal_Popup_Body" class="mb-3 row">
+                        <div class="row" style="font-size:14px">
+                            <div class="col-12">
+                            <table id="LV_Client" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                               
+                                    <thead id="LV_Client_Head"></thead>
+                                    <tbody id="LV_Client_DataBody"></tbody>
+                             
+                            </table>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="Modal_Popup_Panel">
+                        <button style="display:none" id="Modal_Update_btn_Save" type="submit" class="btn btn-primary" onclick="Modal_Update_Save()">Save</button>
+                    </div>
+                    <div id="Modal_Popup_Waiting" style="display:none">
+                        <div class='text-center'>
+                            <div class='spinner-border text-primary m-1' role='status'>
+                                <span class='sr-only'>Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Required datatable js -->
+<script src="~/libs/jquery/jquery.min.js"></script>
+<script src="~/libs/bootstrap/js/bootstrap.min.js"></script>
+<script src="~/libs/datatables/js/dataTables.min.js"></script>
+<script src="~/libs/chart.js/chartjs.js"></script>
+
+<script>
+    var _Data;
+    var _PageSelected = "";
+    var _PageSize;
+    $(document).ready(function () {
+        $('#Provinces option')[0].selected = true;
+    });
+    $("#Provinces").on("change", function () {
+        var zProvince = $('#Provinces').find(":selected").val();
+       // alert(zProvince)
+        var zDataRequest = { "LocationID": zProvince };
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=CollectData",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                DisplayDistrict(dataResponse)
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    });
+    function DisplayDistrict(dataview) {
+        var zContent = "";
+
+        var n = dataview.length;
+        //  alert(n)
+        if (n > 0) {
+            //  for (string zItem in Model.DataOfProvinces) {
+            //               <option value=""></option>
+            //    }
+            for (i = 0; i < n; i++) {
+                zContent += "<option value=\"" + dataview[i][1] + "\">" + dataview[i][1] + "</option>";
+
+            }
+            $("#District").html(zContent);
+        }
+        $('#District option')[0].selected = true;
+    }
+    $("#District").on("change", function () {
+        var zProvince = $('#Provinces').find(":selected").text();
+    //   alert(zProvince)
+        var zDataRequest = { "LocationID": zProvince };
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=CollectCommodity",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+             //   alert(dataResponse)
+                DisplayCommodity(dataResponse)
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    });
+    var ListComm;
+    var ListCoun;
+    var ListStatus;
+    var sumArray;
+    var sumArray2;
+    var sumArray3;
+    function DisplayCommodity(dataview) {
+        var zContent = "";
+        var uniqueComm = new Set();
+        console.log(dataview)
+        var n = dataview.length;
+        if (n > 0) {
+            zContent += "<option value=''>Chọn tất cả</option>";
+            for (var i = 0; i < n; i++) {
+                var value = dataview[i][0];
+                uniqueComm.add(value); // Thêm giá trị vào Set, Set tự loại bỏ các giá trị trùng lặp
+            }
+          
+            // Duyệt qua tất cả các giá trị duy nhất trong Set và tạo các tùy chọn cho dropdown
+            uniqueComm.forEach(function (value) {
+                zContent += "<option value=\"" + value + "\">" + value + "</option>";
+            });
+
+            $("#Commodity").html(zContent);
+        }
+        var sumMap = {};
+        var sumMap2 = {};
+        var sumMap3 = {};
+        // Duyệt qua mỗi phần tử trong dataview
+        for (var i = 0; i < n; i++) {
+            var key = dataview[i][0]; // Lấy giá trị dataview[i][0] làm khóa
+            var key2 = dataview[i][1];
+            var key3 = dataview[i][2];
+            var value = parseInt(dataview[i][3]);
+        // Kiểm tra xem tổng có được tính cho khóa này chưa
+            if (sumMap[key] === undefined) {
+        // Nếu chưa, khởi tạo tổng bằng giá trị dataview[i][2]
+                sumMap[key] = value;
+            } else {
+        // Nếu đã có tổng cho khóa này, thêm giá trị dataview[i][2] vào tổng
+                sumMap[key] += value;
+            }
+            if (sumMap2[key2] === undefined) {
+        // Nếu chưa, khởi tạo tổng bằng giá trị dataview[i][2]
+                sumMap2[key2] = value;
+            } else {
+        // Nếu đã có tổng cho khóa này, thêm giá trị dataview[i][2] vào tổng
+                sumMap2[key2] += value;
+            }
+            if (sumMap3[key3] === undefined) {
+        // Nếu chưa, khởi tạo tổng bằng giá trị dataview[i][2]
+                sumMap3[key3] = value;
+            } else {
+        // Nếu đã có tổng cho khóa này, thêm giá trị dataview[i][2] vào tổng
+                sumMap3[key3] += value;
+            }
+        }
+        sumArray = Object.values(sumMap);
+        sumArray2 = Object.values(sumMap2);
+        sumArray3 = Object.values(sumMap3);
+        // Hiển thị kết quả
+        //console.log(sumMap);
+        ListComm=uniqueComm;
+        var uniqueCou = new Set();
+        var zContent2 = "";
+        if (n > 0) {
+            zContent2 += "<option value=''>Chọn tất cả</option>";
+            for (var i = 0; i < n; i++) {
+                var value = dataview[i][1];
+                uniqueCou.add(value); // Thêm giá trị vào Set, Set tự loại bỏ các giá trị trùng lặp
+            }
+
+            // Duyệt qua tất cả các giá trị duy nhất trong Set và tạo các tùy chọn cho dropdown
+            uniqueCou.forEach(function (value) {
+                zContent2 += "<option value=\"" + value + "\">" + value + "</option>";
+            });
+
+            $("#Country").html(zContent2);
+        }
+        ListCoun=uniqueCou;
+        var uniqueStatus = new Set();
+        var zContent3 = "";
+        if (n > 0) {
+            zContent3 += "<option value=''>Chọn tất cả</option>";
+            for (var i = 0; i < n; i++) {
+                var value = dataview[i][2];
+                uniqueStatus.add(value); // Thêm giá trị vào Set, Set tự loại bỏ các giá trị trùng lặp
+            }
+
+            // Duyệt qua tất cả các giá trị duy nhất trong Set và tạo các tùy chọn cho dropdown
+            uniqueStatus.forEach(function (value) {
+                zContent3 += "<option value=\"" + value + "\">" + value + "</option>";
+            });
+
+            $("#Status").html(zContent3);
+        }
+        $('#Commodity option')[0].selected = true;
+        $('#Country option')[0].selected = true;
+        $('#Status option')[0].selected = true;
+        Chart_Display(uniqueComm,sumArray);
+        Chart_Display2(uniqueCou,sumArray2);
+        Chart_Display_Year(uniqueStatus, sumArray3);
+    }
+    function btn_Search_Click() {
+        _PageSelected = "";
+        LV_LoadData_Ajax();
+    }
+     $('#PageNumberView').on('click', function (e) {
+        _PageSelected = e.target.id;
+        LV_LoadData_Ajax();
+    });
+
+    function LV_LoadData_Ajax() {
+
+        $("#LV_Waiting").css("display", "");
+        $("#LV_DataBody").html("");
+        $("#PageNumberView").html("");
+
+        var zSearchContent = $("#txt_Search").val();
+        var zProvinces = $('#Provinces').find(":selected").text();
+        var zDistrict = $('#District').find(":selected").val();
+        var zCountry = $('#Country').find(":selected").val();
+        var zCommodity = $('#Commodity').find(":selected").val();
+        var zStatus = $('#Status').find(":selected").val();
+       // var zStatusView = $('#StatusView').find(":selected").val();
+        var test = "LocationID = '" + zProvinces + "' AND District = '" + zDistrict+"' "
+       // alert(test)
+        var zDataRequest = { "searchContent": zSearchContent, "LocationID": test, "country": zCountry, "commodity": zCommodity, "status":zStatus,"pageSelected": _PageSelected };
+
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=LoadData",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                _Data = dataResponse;
+                console.log(_Data)
+                LV_DisplayData(dataResponse);
+                $("#LV_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    function LV_DisplayData(dataview) {
+        var zContent = "";
+        var zHeader = "";
+        var zPageTotal, zPageSelectedIndex;
+        var zStyle_RecordView = "";
+
+        if (dataview.info.name == "ERROR") {
+            $("#txt_MessageLog").html(dataview.info.name);
+        }
+        else {
+            var zPageNumberView = "";
+            zPageSelectedIndex = parseInt(dataview.info.pageNumber);
+            _PageSize = parseInt(dataview.info.pageSize);
+
+            zPageTotal = parseInt(dataview.info.pageTotal);
+            if (zPageTotal > 1) {
+                for (i = 1; i <= zPageTotal; i++) {
+                    if (zPageSelectedIndex == i)
+                        zPageNumberView += "<button id='page" + i + "' type='button' class='btn btn-outline-secondary active'>" + i + "</button>"
+                    else
+                        zPageNumberView += "<button id='page" + i + "' type='button' class='btn btn-outline-secondary'>" + i + "</button>"
+                }
+            }
+            $("#PageNumberView").html(zPageNumberView);
+            var k = 0;
+            k = dataview.fieldsName.length;
+            zHeader += "<tr style='cursor:pointer'>";
+            zHeader += "    <th class='text-center text-light bg-primary align-middle'> STT </th>";
+            for (i = 1; i < k; i++) {
+                zHeader += "    <th class='text-center text-light bg-primary align-middle'> " + dataview.fieldsName[i] + "</th>";
+            }
+             //them
+            zHeader += "    <th class='text-center text-light bg-primary'>Action</th>";
+            zHeader += "</tr>";
+            $("#LV_DataHeader").html(zHeader);
+
+            var n = dataview.dataOfTable.length;
+            for (i = 0; i < n; i++) {
+
+                zContent += "       <tr >";
+                zContent += "           <td style='" + zStyle_RecordView + "'>";
+                zContent += "               <div> " + (((zPageSelectedIndex - 1) * _PageSize) + i + 1) + " </div>";
+                zContent += "           </td>";
+                for (j = 1; j < k; j++) {
+                    zContent += "           <td style='cursor:pointer' onclick=LV_Detail_LoadData_Ajax(" + i + ") style='" + zStyle_RecordView + "'>" + dataview.dataOfTable[i][j] + "</td>";
+                 
+                 
+                }
+                //them
+                zContent += "          <td class='align-middle'>";
+                zContent += "               <div class='btn-group mr-2' role='group' aria-label='First group'>";
+                zContent += "                   <button class='btn btn-primary' onclick=\"Modal_View_PUC('" + dataview.dataOfTable[i][1] + "')\">";
+                zContent += "                      <i class='uil uil-sliders-v-alt font-size-18'></i></button>";
+
+
+                //zContent += "                   <button class='btn btn-primary' onclick=\"Modal_Change_Show('" + dataview.dataOfTable[i][0] + "','Del')\">";
+                //zContent += "                      <i class='uil uil-trash-alt font-size-18'></i>"
+
+                zContent += "               </div>";
+                zContent += "            </td>";
+                zContent += "            </tr>";
+            }
+
+            $("#LV_DataBody").html(zContent);
+
+        }
+    }
+    function btn_Map(){
+        var zProvinces = $('#Provinces').find(":selected").text();
+        var zDistrict = $('#District').find(":selected").val();
+
+        var test = "LocationID = '" + zProvinces + "' AND District = '" + zDistrict+"' "
+        var zDataRequest = { "Province":zProvinces,"District": zDistrict};
+
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=ViewMap",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                window.location.replace(dataResponse.redirectUrl);
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    function Modal_View_PUC(Index){
+        var zDataRequest = { "Key": Index };
+     //   alert(zDataRequest)
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=ViewPUC",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                //$("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                 window.location.replace(dataResponse.redirectUrl);
+            })
+    }
+    var _Dataview_Detail;
+    function LV_Detail_LoadData_Ajax(Index) {
+        //alert(Index);
+   //     alert(_Data.dataOfTable[Index][0]);
+        $("#Modal_Popup_Form").modal('show');
+        $("#Modal_Popup_Waiting").css("display", "");
+        $("#LV_Client_DataBody").html("");
+       
+      //  $("#Modal_Popup_Title").html("Danh sách tài khoản trong <span style='color:red'> " + zMonthView + "-" + zYearView + " </span> của <span style='color:red'>" + _DataView.data[Index][1] + "</span> ");
+
+
+        var zCustomerID = _Data.dataOfTable[Index][0];
+
+        var zDataRequest = { "Key": zCustomerID };
+     //   alert(zDataRequest)
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=LoadInfo",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                //$("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                _Dataview_Detail = dataResponse;
+             //   console.log(dataResponse);
+                LV_Detail_DisplayData();
+                $("#Modal_Popup_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    function LV_Detail_DisplayData() {
+        var zStyle_RecordView = "";
+        var n = _Dataview_Detail.data.length;
+        var zHead = "";
+        var zContent = "";
+        zHead += "<tr><th>Column Name</th><th>Value</th></tr>";
+        
+      //  zContent += "<tr><td>AutoKey</td><td>" +_Dataview_Detail.data[0][0]+ "</td></tr>";
+      // zContent += "<div class='input-group mb-2'>";
+        zContent += "<tr><td>LocationName</td><td><input readonly class='form-control' aria-label='Content' type='text' value='" +_Dataview_Detail.data[0][1]+ "' /></td></tr>";
+  
+        zContent += "<tr><td>Country</td><td><input readonly class='form-control' aria-label='Content' type='text' value='" +_Dataview_Detail.data[0][2]+ "' /></td></tr>";
+     
+        zContent += "<tr><td>Commodity</td><td><input readonly class='form-control' aria-label='Content' type='text' value='" +_Dataview_Detail.data[0][3]+ "' /></td></tr>";
+
+        zContent += "<tr><td>District</td><td><input id='District' class='form-control' aria-label='Content' type='text' value='" +_Dataview_Detail.data[0][4]+ "' /></td></tr>";
+     
+        zContent += "<tr><td>Commune</td><td><input id='Commune' class='form-control' aria-label='Content' type='text' value='" +_Dataview_Detail.data[0][5]+ "' /></td></tr>";
+ 
+        zContent += "<tr><td>NumberUnit</td><td><input readonly class='form-control' aria-label='Content' type='text' value='" +_Dataview_Detail.data[0][6]+ "' /></td></tr>";
+   
+        zContent += "<tr><td>NameOfUnit</td><td><input id='NameOfUnit' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][7]+ "' /></td></tr>";
+    
+        zContent += "<tr><td>RandomNumber</td><td><input readonly type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][8]+ "' /></td></tr>";
+     
+        zContent += "<tr><td>AddressOfUnit</td><td><input id='AddressOfUnit' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][9]+ "' /></td></tr>";
+     
+        zContent += "<tr><td>LongLat</td><td><input id='LongLat' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][10]+ "' /></td></tr>";
+    
+        zContent += "<tr><td>Surface</td><td><input id='Surface' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][11]+ "' /></td></tr>";
+        
+        zContent += "<tr><td>Field</td><td><input id='Field' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][12]+ "' /></td></tr>";
+      
+        zContent += "<tr><td>PUC</td><td><input readonly type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][13]+ "' /></td></tr>";
+
+        zContent += "<tr><td>Status</td><td><input id='Status' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][14]+ "' /></td></tr>";
+       
+        zContent += "<tr><td>DATEOFAPPROVED</td><td><input id='DATEOFAPPROVED' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][15]+ "' /></td></tr>";
+       
+        zContent += "<tr><td>DATEOFREAPPROVED</td><td><input id='DATEOFREAPPROVED' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][16]+ "' /></td></tr>";
+       
+        zContent += "<tr><td>DATEOFEXPIRATION</td><td><input id='DATEOFEXPIRATION' type='text' class='form-control' aria-label='Content' value='" +_Dataview_Detail.data[0][17]+ "' /></td></tr>";
+     //   zContent +="</div>";
+      //  zContent += "</tbody>";
+        $("#Modal_Update_btn_Save").css("display", "");
+      //  $("#Modal_Popup_Panel").css("display", "");
+        $("#LV_Client_Head").html(zHead);
+        $("#LV_Client_DataBody").html(zContent);
+
+    }
+    function Modal_Update_Save(){
+      //  var zSearchContent = $("#txt_Search").val();
+          var key =_Dataview_Detail.data[0][0];
+          var District = $("#District").val();
+          var Commune = $("#Commune").val();
+          var NameOfUnit = $("#NameOfUnit").val();
+          var AddressOfUnit = $("#AddressOfUnit").val();
+          var LongLat = $("#LongLat").val();
+          var Surface = $("#Surface").val();
+          var Field = $("#Field").val();
+          var Status = $("#Status").val();
+          var DATEOFAPPROVED = $("#DATEOFAPPROVED").val();
+          var DATEOFREAPPROVED = $("#DATEOFREAPPROVED").val();
+          var DATEOFEXPIRATION = $("#DATEOFEXPIRATION").val();
+          var zDataRequest = {"Code": key,"District": District,"Commune": Commune,"NameOfUnit": NameOfUnit,"AddressOfUnit": AddressOfUnit,"LongLat": 
+          LongLat,"Surface": Surface,"Field": Field,"Status": Status,"DATEOFAPPROVED": DATEOFAPPROVED,"DATEOFREAPPROVED": DATEOFREAPPROVED,"DATEOFEXPIRATION":DATEOFEXPIRATION}
+        //  alert(key);
+            $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/CropSeason?handler=LoadUpdate",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+            })
+            .done(function (dataResponse) {
+                //$("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                _Dataview_Detail = dataResponse;
+             //   alert(dataResponse);
+              //  LV_Detail_DisplayData();
+                $("#Modal_Popup_Waiting").css("display", "none");
+                $("#Modal_Popup_Form").modal('hide');
+            })
+            .fail(function (error) {
+                alert('Error : ' + dataResponse);
+            });
+    }
+</script>
+
+<script>
+   // var xValues = ["Thanh Long", "Xoài", "Lúa", "Mãng cầu", "Sầu riêng"];
+  //  var yValues = [55, 49, 90, 24, 60];
+    var barColors = ["red", "green", "blue", "orange", "brown","yellow","pink","black","grey","purple"];
+    var zLabels = ["Approved", "Waiting", "Revoked", "Cancelled", "Inactive", "Suspended"];
+    var Chart_KPI_Year;
+    function Chart_Display_Year(label,data) {
+       // console.log(label)
+       // console.log(data)
+       var myArray = [...label];
+        try {
+            var existing_chart = Chart.getChart('Chart_KPI_Year')
+            existing_chart.destroy();
+            console.log('trying to destory then redraw chart');
+        } catch(e) {
+            console.log('chart does not exist yet to destroy');
+        }
+        var Log = "";
+     //   if (Chart_KPI_Year != null)
+   //         Chart_KPI_Year.destroy();
+        var Chart_KPI_Year = new Chart(document.getElementById('Chart_KPI_Year'), {
+            type: "pie",
+            data: {
+                labels: myArray,
+                datasets: [{
+                    data: data
+                }]
+            }, options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Thống kê theo tình trạng',
+                        padding: {
+                            top: 5,
+                            bottom: 5
+                        }
+                    },
+                    legend: {
+                        display:false,
+                        position: "bottom"
+                    }
+                }
+            }
+
+        });
+
+    }
+   
+    function Chart_Display(label,data){
+        try {
+            var existing_chart = Chart.getChart('Chart_View')
+            existing_chart.destroy();
+            console.log('trying to destory then redraw chart');
+        } catch(e) {
+            console.log('chart does not exist yet to destroy');
+        }
+        
+        var Chart_View=new Chart("Chart_View", {
+        type: "bar",
+        data: {
+            labels: Array.from(label),
+            datasets: [{
+                backgroundColor: barColors,
+                data: data
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+        });
+       // Chart_View.data.labels=Array.from(ListComm);
+        
+     //   Chart_View.update();
+    }
+     function Chart_Display2(label,data){
+        try {
+            var existing_chart = Chart.getChart('Chart_View_Country')
+            existing_chart.destroy();
+            console.log('trying to destory then redraw chart');
+        } catch(e) {
+            console.log('chart does not exist yet to destroy');
+        }
+        var Chart_View=new Chart("Chart_View_Country", {
+        type: "bar",
+        data: {
+            labels: Array.from(label),
+            datasets: [{
+                backgroundColor: barColors,
+                data: data
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+        });
+       // Chart_View.data.labels=Array.from(ListComm);
+        
+   //     Chart_View.update();
+    }
+</script>

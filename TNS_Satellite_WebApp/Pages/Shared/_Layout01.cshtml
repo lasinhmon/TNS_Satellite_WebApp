@@ -1,0 +1,174 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<link href="~/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/libs/minible/css/icons.min.css" rel="stylesheet" type="text/css" />
+<link href="~/css/site01.css" rel="stylesheet" />
+
+<div id="Panel_Content" style="float:left; display:block">
+    <div style="clear:both">
+        @RenderBody()
+    </div>
+</div>
+<div id="Panel_Menu" style="float:right;display:block;background-color:#0d6efd; height:100vh;  color:white; border-left:1px solid #eeeeee">
+    <div style="height:60px;">
+        <img src="~/images/Icon_Menu.png" />
+    </div>
+    <div style="height:1px;border-bottom:1px solid #eeeeee"></div>
+    <div style="height:60px;">
+        <img src="~/images/Icon_Layer.png" />
+    </div>
+    <div style="padding-left:5px; padding-right:5px">
+        <div style="height:1px;border-bottom:1px solid #4892ff"></div>
+    </div>
+    <div style="height:60px;">
+        <img src="~/images/Icon_Calendar.png" />
+    </div>
+</div>
+<div id="Panel_Menu_Sub" style="float:right;display:block;background-color:#0d6efd; height:100vh;  color:white; border-left:1px solid #eeeeee">
+    <div class="text-center" style="height:30px; font-weight:bold; background-color:#005ade; padding-top:5px">Địa danh</div>
+    <div style="padding:5px;">
+        <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                --- Tỉnh / Thành phố ---
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Hồ chí minh</a></li>
+                <li><a class="dropdown-item" href="#">Hà nội</a></li>
+                <li><a class="dropdown-item" href="#">Cần thơ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div style="padding:5px;">
+        <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                ---Quận / Huyện ---
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Hồ chí minh</a></li>
+                <li><a class="dropdown-item" href="#">Hà nội</a></li>
+                <li><a class="dropdown-item" href="#">Cần thơ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div style="padding:5px;">
+        <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                ---Xã / Phường ---
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Hồ chí minh</a></li>
+                <li><a class="dropdown-item" href="#">Hà nội</a></li>
+                <li><a class="dropdown-item" href="#">Cần thơ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="text-center" style="height:30px; font-weight:bold; background-color:#005ade; padding-top:5px">Lớp dữ liệu</div>
+
+    <div style="padding:5px">
+        <div class="row">
+            <div class="col-md-1" style="padding-top:3px">
+                <img src='/images/0_WR.png' width='16px' />
+            </div>
+            <div class="col-md-11">Thông tin địa chính </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1" style="padding-top:3px">
+                <img src='/images/0_WR.png' width='16px' />
+            </div>
+            <div class="col-md-11">Chỉ số thực vậy </div>
+        </div>
+        <div style="padding-left:20px">
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">NDVI </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">LAI </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">ARVI </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">EVI </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1" style="padding-top:3px">
+                <img src='/images/0_WR.png' width='16px' />
+            </div>
+            <div class="col-md-11">Ánh sáng đêm </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1" style="padding-top:3px">
+                <img src='/images/0_WR.png' width='16px' />
+            </div>
+            <div class="col-md-11"> Thời tiết</div>
+        </div>
+        <div class="row">
+            <div class="col-md-1" style="padding-top:3px">
+                <img src='/images/0_WR.png' width='16px' />
+            </div>
+            <div class="col-md-11"> Phân bố cây trồng </div>
+        </div>
+        <div style="padding-left:20px">
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">Thanh Long </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">Lúa </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1" style="padding-top:3px">
+                    <img src='/images/0_WD.png' width='14px' />
+                </div>
+                <div class="col-md-10">Khoai mỡ </div>
+            </div>
+          
+        </div>
+        <div class="row">
+            <div class="col-md-1" style="padding-top:3px">
+                <img src='/images/0_WR.png' width='16px' />
+            </div>
+            <div class="col-md-11"> Mùa vụ & dự báo sản lượng</div>
+        </div>
+    </div>
+
+    <script src="~/libs/jquery/jquery.min.js"></script>
+    <script src="~/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            DesignLayout();
+        })
+
+        $(window).resize(function () {
+            DesignLayout();
+        });
+        function DesignLayout() {
+            var zWidth = $(document).width();
+            var zPanel_Menu = 72;
+            var zPanel_Menu_Sub = 250;
+            $('#Panel_Menu').width(zPanel_Menu);
+            $('#Panel_Menu_Sub').width(zPanel_Menu_Sub);
+            $('#Panel_Content').width(zWidth - zPanel_Menu - zPanel_Menu_Sub - 2);
+        }
+    </script>

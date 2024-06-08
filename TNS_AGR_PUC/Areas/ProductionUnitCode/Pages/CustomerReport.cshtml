@@ -1,0 +1,245 @@
+﻿@page
+@model TNS_KPI.Areas.KPI_BankAccount.Pages.CustomerReportModel
+@{
+}
+
+<link href="~/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/libs/datatables/css/dataTables.min.css" rel="stylesheet" type="text/css" />
+<div style="width:100%; margin:-20px 0 0 -20px">
+    <div style="padding:5px; font-weight:bold; font-size:13px">
+        <a href="~/Index" style="text-decoration:none; color:#4c4c4c">Home</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="#" style="text-decoration:none; color:#4c4c4c">KPI</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="~/KPI_BankAccount/Submenu" style="text-decoration:none; color:#4c4c4c">Nguồn vốn</a>
+        <span class="uil-angle-double-right"></span>
+        <span style="color:maroon">Truy vấn khách hàng</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 text-center text-primary" style="font-size:22px; font-weight:bold">
+        TRUY VẤN KHÁCH HÀNG
+    </div>
+</div>
+<div class="row mb-2">
+
+    <div class="col-md-2">
+        <div class="col-12 text-center text-primary" style="font-size:22px; font-weight:bold">
+        </div>
+    </div>
+    <div class="col-md-8 md-3">
+        <div class="input-group">
+            <input id="txt_Search" type="text" class="form-control w-auto" placeholder="Tìm kiếm" aria-label="Tìm kiếm" aria-describedby="button-addon2">
+
+            <button id="btn_Search" class="btn btn-primary" onclick="LV_LoadHistory_Ajax()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-2 text-end">
+    </div>
+
+</div>
+
+<div style="height:20px"></div>
+<div style="width:100%;">
+    <div class="row">
+        <table id="LV_Datatable" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; font-size:13px ">
+            <thead id="LV_DataHeader">
+            </thead>
+
+            <tbody id="LV_DataBody">
+            </tbody>
+
+        </table>
+        <div id="LV_Waiting" style="display:none">
+            <div class='text-center'>
+                <div class='spinner-border text-primary m-5' role='status'>
+                    <span class='sr-only'>Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<div>
+    <div style="cursor:pointer" onclick="MessageLog_Show()">
+        <i class="uil-apple"></i>
+    </div>
+    <div id="txt_MessageLog" class="row" style="display:none; padding:20px; ">
+    </div>
+</div>
+
+
+<div id="Modal_Area">
+    <div class="modal fade" id="Modal_Selected_Form" tabindex="-1" aria-labelledby="Modal_Selected_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Modal_Selected_Title">Chọn nhân viên </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="Modal_Selected_Body" class="mb-3 row">
+                        <div style="display:none">
+                            <div id="Modal_Selected_lbl_ItemIndex"></div>
+                            <div id="Modal_Selected_lbl_ItemKey"></div>
+                            <div id="Modal_Selected_lbl_UnitKey"></div>
+                        </div>
+
+                    </div>
+                    <div id="Modal_Selected_Panel"></div>
+                    <div id="Modal_Selected_Waiting" style="display:none">
+                        <div class='text-center'>
+                            <div class='spinner-border text-primary m-1' role='status'>
+                                <span class='sr-only'>Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="Modal_PhuLucItem_Form" tabindex="-1" aria-labelledby="Modal_PhuLucItem_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Modal_PhuLucItem_Title">Chi tiết  </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="Modal_PhuLucItem_Body" class="mb-3 row">
+                        <div style="display:none">
+                        </div>
+
+                    </div>
+                    <div id="Modal_PhuLucItem_Panel">
+                        <table id="Modal_PhuLucItem_LV" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead id="Modal_PhuLucItem_LV_Header">
+                            </thead>
+
+                            <tbody id="Modal_PhuLucItem_LV_Body">
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div id="Modal_PhuLucItem_Waiting" style="display:none">
+                        <div class='text-center'>
+                            <div class='spinner-border text-primary m-1' role='status'>
+                                <span class='sr-only'>Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Required datatable js -->
+<script src="~/libs/jquery/jquery.min.js"></script>
+<script src="~/libs/bootstrap/js/bootstrap.min.js"></script>
+<script src="~/libs/datatables/js/dataTables.min.js"></script>
+<script src="~/libs/chart.js/chartjs.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#YearView option')[3].selected = true;
+    });
+
+    function MessageLog_Show() {
+        $("#txt_MessageLog").css("display", "");
+    }
+
+</script>
+
+<script>
+    // 2 va 14 la lay het
+    var _DataView;
+    function LV_LoadHistory_Ajax() {
+
+        $("#LV_Waiting").css("display", "");
+        $("#LV_DataBody").html("");
+
+        var zSearchContent = $("#txt_Search").val();
+        var zDataRequest = { "customerID": zSearchContent };
+
+        $.ajax({
+            type: 'POST',
+            url: "/KPI_BankAccount/CustomerReport?handler=LoadHistory",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+
+                _DataView = dataResponse;
+                LV_Display_History();
+                //    Chart_Display_Month();
+
+                $("#LV_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            })
+
+    }
+    function LV_Display_History() {
+        var zContent = "";
+        var zHeader = "";
+        var k = 0;
+        var zStyle_RecordView = "";
+
+        zHeader += "<tr>";
+        zHeader += " <th class='bg-primary text-light text-center'>STT</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Tháng</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Số tài khoản</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Nguyên tệ</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Loại tiền</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Tỷ giá</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Số tiền</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Giao dịch tại</th> ";
+        zHeader += " <th class='bg-primary text-light text-center'>Phân bổ</th> ";
+        zHeader += "</tr>";
+
+        var n = _DataView.data.length;
+        for (i = 0; i < n; i++) {
+            if (_DataView.data[i][8] == '10')
+                zStyle_RecordView = "font-weight:bold; color:red";
+            else
+                zStyle_RecordView = "";
+
+            zContent += "       <tr style='cursor:pointer'>";
+            zContent += "           <td style='" + zStyle_RecordView + "'>" + (i + 1) + "</td>";
+            zContent += "           <td style='" + zStyle_RecordView + "'>" + _DataView.data[i][1] + " </td>";
+            zContent += "           <td style='" + zStyle_RecordView + "'>" + _DataView.data[i][2] + " </td>";
+            zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][3] + " </td>";
+            zContent += "           <td class='text-center' style='" + zStyle_RecordView + "'>" + _DataView.data[i][4] + " </td>";
+            zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][5] + " </td>";
+            zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][6] + " </td>";
+            zContent += "           <td style='" + zStyle_RecordView + "'>" + _DataView.data[i][7] + " </td>";
+            zContent += "           <td style='" + zStyle_RecordView + "'>" + _DataView.data[i][9] + " </td>";
+            zContent += "       </tr>";
+
+        }
+        $("#LV_DataHeader").html(zHeader);
+        $("#LV_DataBody").html(zContent);
+
+
+        // $("#txt_MessageLog").text(zContent);
+
+    }
+
+</script>
+
+
+
+

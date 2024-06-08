@@ -1,0 +1,704 @@
+﻿@page
+@model TNS_AGR.Areas.ProductionUnitCode.Pages.MapCommodityModel
+@{
+}
+<div style="width:100%; margin:-20px 0 0 -20px">
+    <div style="padding:5px; font-weight:bold; font-size:13px">
+        <a href="~/Index" style="text-decoration:none; color:#4c4c4c">Home</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="#" style="text-decoration:none; color:#4c4c4c">Quản lý vùng trồng</a>
+        <span class="uil-angle-double-right"></span>
+        <span style="color:maroon"> @Model._Province</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-9">
+
+        <div class="row">
+            <div class="col-9">
+               
+            </div>
+            <div class="col-3">
+               
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9">
+
+                <div id="map" style="height:650px;"></div>
+
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <table id="LV_Datatable" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; font-size:13px; ">
+                <thead id="LV_DataHeader">
+                  
+                </thead>
+
+                <tbody id="LV_DataBody">
+                </tbody>
+
+            </table>
+            <div class="row ">
+                <div class="col-9 text-center">
+                    <div id="PageNumberView" class="btn-group me-2" role="group" aria-label="First group">
+                    </div>
+                </div>
+                <div class="col-3 text-center">
+                   
+                </div>
+            </div>
+            <div id="LV_Waiting" style="display:none">
+                <div class='text-center'>
+                    <div class='spinner-border text-primary m-5' role='status'>
+                        <span class='sr-only'>Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-3" style="font-size:14px">
+        <div class="row">
+            <div class="input-group" style="padding-left:0; padding-right:0">
+             
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center bg-success" style="font-weight:bold; color:white; padding:5px">
+            THỐNG KÊ THEO
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Tỉnh</div>
+            <div class="col-8">
+                <input type="text" id="Provinces" value="@Model._Province" class="form-control w-100" readonly />
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Huyện</div>
+            <div class="col-8">
+                <input type="text" id="District" value="@Model._District" class="form-control w-100" readonly/>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+       
+        <div style="height:5px"></div>
+       
+        <div style="height:5px"></div>
+       
+        <div style="height:15px"></div>
+        <div class="row justify-content-center">
+            <button id="btn_Search" class="btn btn-primary w-50" onclick="btn_Search_Click()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+
+        <div class="row align-items-center">
+        </div>
+    </div>
+</div>
+<div id="Modal_Area" class="modal-dialog  modal-dialog-right">
+    <div class="modal fade" id="Modal_Popup_Form" tabindex="-1" aria-labelledby="Modal_Selected_Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Modal_Popup_Title">Kiểm tra thông tin </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="Modal_Popup_Body" class="mb-3 row">
+                        <div class="row" style="font-size:14px">
+                            <div class="col-12">
+                            <table id="LV_Client" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                               
+                                    <thead id="LV_Client_Head"></thead>
+                                    <tbody id="LV_Client_DataBody"></tbody>
+                             
+                            </table>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="Modal_Popup_Panel">
+                        <button style="display:none" id="Modal_Update_btn_Save" type="submit" class="btn btn-primary" onclick="Modal_Update_Save()">Save</button>
+                    </div>
+                    <div id="Modal_Popup_Waiting" style="display:none">
+                        <div class='text-center'>
+                            <div class='spinner-border text-primary m-1' role='status'>
+                                <span class='sr-only'>Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Required datatable js -->
+<script src="~/libs/jquery/jquery.min.js"></script>
+<script src="~/libs/bootstrap/js/bootstrap.min.js"></script>
+<script src="~/libs/datatables/js/dataTables.min.js"></script>
+<script src="~/libs/chart.js/chartjs.js"></script>
+
+
+<script>
+    (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+        ({ key: "AIzaSyC_w7-c-tqOl17iN7unP8_UiKVUjU0YgHw", v: "weekly" });</script>
+<!--
+<script>
+    var map;
+    var pinBorder1,pinBorder2;
+    async function initMap() {
+        // The location of Uluru
+        const position = { lat: -25.344, lng:131.031  };
+        // Request needed libraries.
+
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement,PinElement } = await google.maps.importLibrary("marker");
+
+        // The map, centered at Uluru
+        map = new Map(document.getElementById("map"), {
+            zoom: 4,
+            center: position,
+            mapId: "DEMO_MAP_ID",
+        });
+
+        // The marker, positioned at Uluru
+        const marker = new AdvancedMarkerElement({
+            map: map,
+            position: position,
+            title: "Uluru",
+        });
+        pinBorder1 = new PinElement({
+            borderColor: "red",
+        });
+        pinBorder2 = new PinElement({
+            borderColor: "green",
+        });
+    }
+
+    initMap();
+    var _Data;
+    $(document).ready(function () {
+        LV_LoadData_Ajax();
+    });
+    // var x = new google.maps.LatLng(-25.344,131.031);
+    function LV_LoadData_Ajax() {
+
+        var zProvinces = $('#Provinces').val();
+        var zDistrict = $('#District').val();
+        var zDataRequest = { "Province": zProvinces, "District": zDistrict };
+        //alert(zProvinces)
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/MapCommodity?handler=LoadData",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                //   $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                _Data = dataResponse;
+                //  console.log(dataResponse)
+                LV_DisplayData(dataResponse);
+                $("#LV_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    var newmap;
+    function LV_DisplayData(data) {
+         map.data.setMap(null);
+        var coordinates = data.dataOfPUC[0][4];
+        console.log(coordinates)
+        var jsonObject = JSON.parse(coordinates);
+        //   console.log(jsonObject
+        newmap = new google.maps.Map(document.getElementById("map"), {
+            map: map,
+            zoom: 4, 
+            center: { lat: 14.957078, lng: 108.107525 },
+            mapTypeId: 'satellite',
+        });
+        try {
+            newmap.data.addGeoJson(jsonObject);
+            console.log('GeoJSON data added successfully');
+        } catch (error) {
+            console.error('Error adding GeoJSON data:', error);
+        }
+        map.data.setStyle({
+            fillColor: "green",
+            strokeWeight: 1,
+        });
+    //    map.data.setMap(null);
+        map.data = newmap;
+      
+
+    }
+    function btn_Search_Click() {
+        var zProvinces = $('#Provinces').val();
+        var zDistrict = $('#District').val();
+      
+        var test = "b.LocationName = '" + zProvinces + "' AND b.District = '" + zDistrict + "' "
+        var zDataRequest = { "LocationID": test };
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/MapCommodity?handler=LoadLongLat",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                //_Data = dataResponse;
+                  console.log(dataResponse)
+                // LV_DisplayData(dataResponse);
+                Model_Map(dataResponse);
+                $("#LV_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    function Model_Map(data) {
+        var tam = data.dataOfPUC;
+        console.log(tam);
+       
+        for (var i = 0; i < data.dataOfPUC.length; i++) { 
+            var position = new google.maps.LatLng(data.dataOfPUC[i][0], data.dataOfPUC[i][1]);
+            console.log(position + "  "+ data.dataOfPUC[i][2])
+            if (data.dataOfPUC[i][2] == "Dragon fruit") {
+                const marker1 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                   
+                    icon: pinSymbol('red')
+                });
+            } else if (data.dataOfPUC[i][2] == "Lime"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('green')
+                });
+            }else if (data.dataOfPUC[i][2] == "Longan"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('blue')
+                });
+            }else if (data.dataOfPUC[i][2] == "Mango"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('black')
+                });
+            }else if (data.dataOfPUC[i][2] == "Pomelo"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('brown')
+                });
+            }else if (data.dataOfPUC[i][2] == "Rambutan"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('yellow')
+                });
+            }else if (data.dataOfPUC[i][2] == "Red_dragon fruit"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('pink')
+                });
+            }else if (data.dataOfPUC[i][2] == "Rice"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('orange')
+                });
+            }else if (data.dataOfPUC[i][2] == "Star Apple"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('orange')
+                });
+            }else if (data.dataOfPUC[i][2] == "White_dragon fruit"){
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+                  
+                    icon: pinSymbol('purple')
+                });
+            }
+            
+        }
+    }
+    function pinSymbol(color) {
+        return {
+            path: 'M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z',
+            fillColor: color,
+            fillOpacity: 1,
+            strokeColor: '#000',
+            strokeWeight: 2,
+            scale: 1
+        };
+    }
+
+</script>
+-->
+<script>
+    var map;
+    var pinBorder1, pinBorder2;
+    async function initMap() {
+        // The location of Uluru
+        const position = { lat: -25.344, lng: 131.031 };
+        // Request needed libraries.
+
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+        // The map, centered at Uluru
+        map = new Map(document.getElementById("map"), {
+            zoom: 4,
+            center: position,
+            mapId: "DEMO_MAP_ID",
+        });
+
+        // The marker, positioned at Uluru
+        const marker = new AdvancedMarkerElement({
+            map: map,
+            position: position,
+            title: "Uluru",
+        });
+        pinBorder1 = new PinElement({
+            borderColor: "red",
+        });
+        pinBorder2 = new PinElement({
+            borderColor: "green",
+        });
+        $("#btn_Search").click(function () {
+            var zProvinces = $('#Provinces').val();
+            var zDistrict = $('#District').val();
+            var zDataRequest = { "Province": zProvinces, "District": zDistrict };
+            //alert(zProvinces)
+            $.ajax({
+                type: 'POST',
+                url: "/ProductionUnitCode/MapCommodity?handler=LoadData",
+                data: JSON.stringify(zDataRequest),
+                contentType: "application/json",
+                dataType: "json",
+            })
+                .done(function (dataResponse) {
+                    //   $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                    _Data = dataResponse;
+                    //LV_DisplayData(dataResponse);
+                    var coordinates = dataResponse.dataOfPUC[0][4];
+                    var jsonObject = JSON.parse(coordinates);
+                    map.data.addGeoJson(jsonObject);
+                    map.setCenter({
+                        lat: 14.957078, lng: 108.107525
+                    });
+                    map.setMapTypeId('satellite');
+                    $("#LV_Waiting").css("display", "none");
+                    var test = "b.LocationName = '" + zProvinces + "' AND b.District = '" + zDistrict + "' "
+                    var zDataRequest = { "LocationID": test };
+                    $.ajax({
+                        type: 'POST',
+                        url: "/ProductionUnitCode/MapCommodity?handler=LoadLongLat",
+                        data: JSON.stringify(zDataRequest),
+                        contentType: "application/json",
+                        dataType: "json",
+                    })
+                        .done(function (dataResponse) {
+                        
+                            var tam=dataResponse.dataOfPUC
+                            for (var i = 0; i < dataResponse.dataOfPUC.length; i++) {
+                                var position = new google.maps.LatLng(dataResponse.dataOfPUC[i][0], dataResponse.dataOfPUC[i][1]);
+                                console.log(position + "  " + dataResponse.dataOfPUC[i][2])
+                                if (dataResponse.dataOfPUC[i][2] == "Dragon fruit") {
+                                    const marker1 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('red')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Lime") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('green')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Longan") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('blue')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Mango") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('black')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Pomelo") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('brown')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Rambutan") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('yellow')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Red_dragon fruit") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('pink')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Rice") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('orange')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "Star Apple") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('orange')
+                                    });
+                                } else if (dataResponse.dataOfPUC[i][2] == "White_dragon fruit") {
+                                    const marker2 = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+
+                                        icon: pinSymbol('purple')
+                                    });
+                                }
+
+                            }
+                           
+                            $("#LV_Waiting").css("display", "none");
+                        })
+
+                })
+                .fail(function (error) {
+                    alert('Error : ' + error.responseText);
+                });
+        });
+
+    }
+    function pinSymbol(color) {
+        return {
+            path: 'M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z',
+            fillColor: color,
+            fillOpacity: 1,
+            strokeColor: '#000',
+            strokeWeight: 2,
+            scale: 1
+        };
+    }
+
+   initMap();
+    var _Data;
+    $(document).ready(function () {
+        
+       // LV_LoadData_Ajax();
+    });
+    // var x = new google.maps.LatLng(-25.344,131.031);
+    function LV_LoadData_Ajax() {
+
+        var zProvinces = $('#Provinces').val();
+        var zDistrict = $('#District').val();
+        var zDataRequest = { "Province": zProvinces, "District": zDistrict };
+        //alert(zProvinces)
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/MapCommodity?handler=LoadData",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                //   $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                _Data = dataResponse;
+                //  console.log(dataResponse)
+                LV_DisplayData(dataResponse);
+                $("#LV_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    var newmap;
+    function LV_DisplayData(data) {
+        map.data.setMap(null);
+        var coordinates = data.dataOfPUC[0][4];
+        console.log(coordinates)
+        var jsonObject = JSON.parse(coordinates);
+        //   console.log(jsonObject
+        newmap = new google.maps.Map(document.getElementById("map"), {
+            map: map,
+            zoom: 4,
+            center: { lat: 14.957078, lng: 108.107525 },
+            mapTypeId: 'satellite',
+        });
+        try {
+            newmap.data.addGeoJson(jsonObject);
+            console.log('GeoJSON data added successfully');
+        } catch (error) {
+            console.error('Error adding GeoJSON data:', error);
+        }
+        map.data.setStyle({
+            fillColor: "green",
+            strokeWeight: 1,
+        });
+        //    map.data.setMap(null);
+        map.data = newmap;
+
+
+    }
+    /*function btn_Search_Click() {
+        var zProvinces = $('#Provinces').val();
+        var zDistrict = $('#District').val();
+
+        var test = "b.LocationName = '" + zProvinces + "' AND b.District = '" + zDistrict + "' "
+        var zDataRequest = { "LocationID": test };
+        $.ajax({
+            type: 'POST',
+            url: "/ProductionUnitCode/MapCommodity?handler=LoadLongLat",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                //_Data = dataResponse;
+                console.log(dataResponse)
+                // LV_DisplayData(dataResponse);
+                Model_Map(dataResponse);
+                $("#LV_Waiting").css("display", "none");
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+    function Model_Map(data) {
+        var tam = data.dataOfPUC;
+        console.log(tam);
+
+        for (var i = 0; i < data.dataOfPUC.length; i++) {
+            var position = new google.maps.LatLng(data.dataOfPUC[i][0], data.dataOfPUC[i][1]);
+            console.log(position + "  " + data.dataOfPUC[i][2])
+            if (data.dataOfPUC[i][2] == "Dragon fruit") {
+                const marker1 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('red')
+                });
+            } else if (data.dataOfPUC[i][2] == "Lime") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('green')
+                });
+            } else if (data.dataOfPUC[i][2] == "Longan") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('blue')
+                });
+            } else if (data.dataOfPUC[i][2] == "Mango") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('black')
+                });
+            } else if (data.dataOfPUC[i][2] == "Pomelo") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('brown')
+                });
+            } else if (data.dataOfPUC[i][2] == "Rambutan") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('yellow')
+                });
+            } else if (data.dataOfPUC[i][2] == "Red_dragon fruit") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('pink')
+                });
+            } else if (data.dataOfPUC[i][2] == "Rice") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('orange')
+                });
+            } else if (data.dataOfPUC[i][2] == "Star Apple") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('orange')
+                });
+            } else if (data.dataOfPUC[i][2] == "White_dragon fruit") {
+                const marker2 = new google.maps.Marker({
+                    position: position,
+                    map: newmap,
+
+                    icon: pinSymbol('purple')
+                });
+            }
+
+        }
+    }
+    function pinSymbol(color) {
+        return {
+            path: 'M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z',
+            fillColor: color,
+            fillOpacity: 1,
+            strokeColor: '#000',
+            strokeWeight: 2,
+            scale: 1
+        };
+    }*/
+</script>

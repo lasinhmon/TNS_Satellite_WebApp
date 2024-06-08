@@ -1,0 +1,49 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+    //Layout = "_Layout01";
+}
+<div>
+    <div class="row md-5">
+        <div class="col-12 bg-primary text-light text-center">
+           
+        </div>
+    </div>
+    <div style="height:30px"></div>
+    <div id="LV_Waiting" style="display:none">
+        <div class='text-center'>
+            <div class='spinner-border text-primary m-1' role='status'>
+                <span class='sr-only'>Loading...</span>
+            </div>
+            <div class="spinner-border text-secondary m-1" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-border text-success m-1" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/libs/chart.js/chartjs.js"></script>
+    <script src="~/libs/jquery/jquery.min.js"></script>
+
+
+</div>
+<script src="~/libs/jquery/jquery.min.js"></script>
+<script>
+
+    $(window).resize(function () {
+        // DesignLayoutIndex();
+    });
+    function DesignLayoutIndex() {
+        var zHeight = $(document).height();
+        var zPanel_Left_Bottom = 250;
+
+        //  $('#Panel_Right').width(zPanel_Right);
+        // $('#Panel_Right').height(zHeight);
+        //$('#Panel_Left').width(zWidth - zPanel_Right);
+        $('#Panel_Left_Top').height(zHeight - zPanel_Left_Bottom);
+        $('#Panel_Left_Bottom').height(zPanel_Left_Bottom);
+    }
+</script>

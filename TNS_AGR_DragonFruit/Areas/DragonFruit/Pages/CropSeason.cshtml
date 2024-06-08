@@ -1,0 +1,236 @@
+﻿@page
+@model TNS_AGR.Areas.DragonFruit.Pages.CropSeasonModel
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT-SAT | Monitoring</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+</head>
+<body class="sidebar-mini">
+<div style="width:100%; margin:-20px 0 0 -20px">
+    <div style="padding:5px; font-weight:bold; font-size:13px">
+        <a href="~/Index" style="text-decoration:none; color:#4c4c4c">Home</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="#" style="text-decoration:none; color:#4c4c4c">Bản đồ mùa vụ</a>
+        <span class="uil-angle-double-right"></span>
+        <span style="color:maroon">Cây Thanh Long </span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-9">
+       
+            <div id="map" style="height:500px;"></div>
+      
+    </div>
+    <div class="col-3" style="font-size:14px">
+        <div class="row align-items-center" style="font-weight:bold; color:navy">
+            CHỌN KHU VỰC & THỜI GIAN
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Tỉnh</div>
+            <div class="col-8">
+
+                <select id="Provinces" class="form-select w-100">
+                    <option value="">Chọn tỉnh</option>
+                    @foreach (string[] zItem in Model.DataOfProvinces)
+                    {
+                        <option value="@zItem[0]">@zItem[1]</option>
+                    }
+                 
+
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Huyện</div>
+            <div class="col-8">
+                <select id="District" class="form-select w-100">
+                 
+                </select>
+            </div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center">
+            <div class="col-4">Thời Gian</div>
+            <div class="col-8">
+                <div class="input-group">
+                    <select id="MonthView" class="form-select w-sm">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            var zVal = @i.ToString();
+                            <option value="@zVal">@zVal</option>
+                        }
+                    </select>
+                    <select id="YearView" class="form-select w-auto">
+                        @for (int i = 2020; i < 2025; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div style="height:15px"></div>
+        <div class="row justify-content-center">
+            <button id="btn_Search" class="btn btn-primary w-50" onclick="">
+                <i class="fas fa-search"></i> 
+            </button>
+        </div>
+
+        <div style="height:15px"></div>
+        <div class="row align-items-center" style="font-weight:bold; color:navy">
+            DIỆN TÍCH
+        </div>
+        <div class="row align-items-center">
+            <div class="col-8">Giai đoạn 1</div>
+            <div class="col-4 text-end">0 m2</div>
+            <div class="col-8">Giai đoạn nở bông</div>
+            <div class="col-4 text-end">0 m2</div>
+            <div class="col-8">Giai đoạn chín</div>
+            <div class="col-4 text-end">0 m2</div>
+        </div>
+        <div style="height:5px"></div>
+        <div class="row align-items-center" style="font-weight:bold; color:navy">
+            SẢN LƯỢNG
+        </div>
+        <div class="row align-items-center">
+            <div class="col-8">Thu hoạch</div>
+            <div class="col-4 text-end">0 Tấn</div>
+        </div>
+    </div>
+</div>
+<br />
+   
+    <script src="~/libs/jquery/jquery.min.js"></script>
+    <script src="~/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/libs/datatables/js/dataTables.min.js"></script>
+    <script src="~/libs/chart.js/chartjs.js"></script>
+    
+    <script>
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })      ({ key: "AIzaSyC2MKvp3G6xhiS7YkTQT4M8TTpKSSMpxxw", v: "weekly" });</script>
+    <script>
+      /*  function initMap() {
+            var mapOptions = {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 8
+            };
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        }*/
+        let map;
+
+        async function initMap() {
+            // The location of Uluru
+            const position = { lat: -25.344, lng: 131.031 };
+            // Request needed libraries.
+          
+            const { Map } = await google.maps.importLibrary("maps");
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+            // The map, centered at Uluru
+            map = new Map(document.getElementById("map"), {
+                zoom: 4,
+                center: position,
+                mapId: "DEMO_MAP_ID",
+            });
+
+            // The marker, positioned at Uluru
+            const marker = new AdvancedMarkerElement({
+                map: map,
+                position: position,
+                title: "Uluru",
+            });
+        }
+
+        initMap();
+
+    </script>
+
+    <script>
+    $(document).ready(function () {
+      //  alert("jeheh")
+        LV_LoadService_Ajax();
+        $('#Provinces option')[0].selected = true;
+       // Modal_Selected_Ajax();
+    });
+
+    function MessageLog_Show() {
+        $("#txt_MessageLog").css("display", "");
+    }
+    function LV_LoadService_Ajax() {
+        var zDataRequest = { };
+        $.ajax({
+            type: 'POST',
+            url: "/DragonFruit/CropSeason?handler=LoadService",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+              
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+     $("#Provinces").on("change", function () {
+        var zProvince = $('#Provinces').find(":selected").val();
+        alert(zProvince)
+        var zDataRequest = { "LocationID": zProvince };
+        $.ajax({
+            type: 'POST',
+            url: "/DragonFruit/CropSeason?handler=CollectData",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+                DisplayWard(dataResponse)
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    });
+    function Modal_Selected_Ajax() {
+        var zProvince = $('#Provinces').find(":selected").val();
+        var zDataRequest = { "LocationID": zProvince };
+        $.ajax({
+            type: 'POST',
+            url: "/DragonFruit/CropSeason?handler=CollectData",
+            data: JSON.stringify(zDataRequest),
+            contentType: "application/json",
+            dataType: "json",
+        })
+            .done(function (dataResponse) {
+              
+            })
+            .fail(function (error) {
+                alert('Error : ' + error.responseText);
+            });
+    }
+     function DisplayWard(dataview){
+        var zContent = "";
+
+        var n = dataview.length;
+      //  alert(n)
+        if (n > 0) {
+          //  for (string zItem in Model.DataOfProvinces) {
+         //               <option value=""></option>
+        //    }
+            for (i = 0; i < n; i++) {
+                zContent += "<option value="+ dataview[i][0]+">"+ dataview[i][1]+"</option>"
+            }
+            $("#District").html(zContent);
+        }
+    }
+</script>
+
+</body>
+
+</html>

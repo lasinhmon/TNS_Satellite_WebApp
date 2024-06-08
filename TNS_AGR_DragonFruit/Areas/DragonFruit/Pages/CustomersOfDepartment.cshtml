@@ -1,0 +1,345 @@
+﻿@page
+@model TNS_KPI.Areas.KPI_BankAccount.Pages.CustomersOfDepartmentModel
+@{
+}
+<!-- DataTables -->
+<link href="~/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/libs/datatables/css/dataTables.min.css" rel="stylesheet" type="text/css" />
+<div style="width:100%; margin:-20px 0 0 -20px">
+    <div style="padding:5px; font-weight:bold; font-size:13px">
+        <a href="~/Index" style="text-decoration:none; color:#4c4c4c">Home</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="#" style="text-decoration:none; color:#4c4c4c">KPI</a>
+        <span class="uil-angle-double-right"></span>
+        <a href="~/KPI_BankAccount/Submenu" style="text-decoration:none; color:#4c4c4c">Nguồn Vốn</a>
+        <span class="uil-angle-double-right"></span>
+        <span style="color:maroon">Khách hàng</span>
+    </div>
+</div>
+<div class="row mb-2" style="padding-top:10px;">
+    <div class="col-12 text-center text-primary" style="font-size:22px; font-weight:bold">
+        KHÁCH HÀNG NGUỒN VỐN
+    </div>
+</div>
+<div class="row mb-2">
+    <div class="col-md-1">
+        <div class="col-12 text-center text-primary" style="font-size:22px; font-weight:bold">
+        </div>
+    </div>
+    <div class="col-md-10 md-3">
+        <div class="input-group">
+            <input id="txt_Search" type="text" class="form-control w-25" placeholder="Tìm kiếm" aria-label="Tìm kiếm" aria-describedby="button-addon2">
+            <select id="MonthView" class="form-select w-auto">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    <option value="@i">@i</option>
+                }
+            </select>
+            <select id="YearView" class="form-select w-auto">
+                @for (int i = 2020; i < 2030; i++)
+                {
+                    <option value="@i">@i</option>
+                }
+            </select>
+            <select id="Department_View" class="form-select w-auto">
+                @foreach (string[] zItem in Model.Departments)
+                {
+                    <option value="@zItem[0]">@zItem[1]</option>
+                }
+            </select>
+            <button class="btn btn-primary" onclick="btn_Search_Click()">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="btn btn-success" onclick="btn_AddNew_Click()">
+                <i class="uil-clipboard-blank"></i>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-1">
+    </div>
+</div>
+<div style="font-weight:bold;color:maroon; height:30px" id="Info_View"></div>
+<div style="width:100%;">
+    <table id="LV_Datatable" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;font-size:14px">
+        <thead id="LV_DataHeader">
+            <tr>
+                <th colspan="8">
+                    <div class="row">
+                        <div class="col-8"></div>
+                        <div class="col-4">
+                            <div class="input-group">
+                                <input id="txt_Lable" readonly type="text" class="form-control w-50" value="Số lượng record">
+                                <input id="txt_AmountRecordDisplay" type="text" class="form-control w-25" value="100">
+                                <button type='button' class='btn btn-warning w-25' onclick='Modal_Export()'><i class='fas uil-export'></i>Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+
+            </tr>
+            <tr>
+                <th class='text-center bg-primary text-light align-middle' style='width:60px'>STT </th>
+                <th class='text-center bg-primary text-light align-middle' style='width:100px'>Mã </th>
+                <th class='text-center bg-primary text-light align-middle' style='width:280px'>Tên khách hàng </th>
+                <th class='text-center bg-primary text-light'> VND</th>
+                <th class='text-center bg-primary text-light'> USD</th>
+                <th class='text-center bg-primary text-light'> EUR</th>
+                <th class='text-center bg-primary text-light'> JPY</th>
+                <th class='text-center bg-warning text-light'> TỔNG TIỀN</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="LV_DataBody">
+        </tbody>
+
+    </table>
+    <div class="row ">
+        <div class="col-12 text-center">
+            <div id="PageNumberView" class="btn-group me-2" role="group" aria-label="First group">
+            </div>
+        </div>
+    </div>
+
+
+    <div id="LV_Waiting" style="display:none">
+        <div class='text-center'>
+            <div class='spinner-border text-primary m-5' role='status'>
+                <span class='sr-only'>Loading...</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div>
+    <div style="cursor:pointer" onclick="MessageLog_Show()">
+        <i class="uil-apple"></i>
+    </div>
+    <div id="txt_MessageLog" class="row" style="display:none; padding:20px; ">
+    </div>
+</div>
+
+
+<div id="Modal_Area" class="modal-dialog modal-lg modal-dialog-right">
+    <div class="modal fade" id="Modal_Popup_Form" tabindex="-1" aria-labelledby="Modal_Popup_Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-f" id="Modal_Popup_Title">INFORMATION</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="Modal_Popup_Body" class="mb-3 row">
+                        <div class="row" style="font-size:14px">
+                            <table id="LV_Client" class="table table-striped table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead id="LV_Client_Head">
+                                </thead>
+
+                                <tbody id="LV_Client_DataBody">
+                                </tbody>
+
+                            </table>
+
+
+                        </div>
+                        <div id="Modal_Popup_Waiting" style="display:none">
+                            <div class='text-center'>
+                                <div class='spinner-border text-primary m-5' role='status'>
+                                    <span class='sr-only'>Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Modal_Popup_Panel"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required datatable js -->
+    <script src="~/libs/jquery/jquery.min.js"></script>
+    <script src="~/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/libs/datatables/js/dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            //  LV_LoadData_Ajax();
+        });
+
+        function MessageLog_Show() {
+            $("#txt_MessageLog").css("display", "");
+        }
+
+    </script>
+
+    <script>
+        var _DataView;
+        function btn_Search_Click() {
+            LV_LoadData_Ajax();
+        }
+
+        function LV_LoadData_Ajax() {
+
+            $("#LV_Waiting").css("display", "");
+            $("#LV_DataBody").html("");
+            $("#PageNumberView").html("");
+
+            var zSearchContent = $("#txt_Search").val();
+            var zMonthView = $('#MonthView').find(":selected").val();
+            var zYearView = $('#YearView').find(":selected").val();
+            var zDepartmentID = $('#Department_View').find(":selected").val();
+            var zAmountRecordDisplay = $('#txt_AmountRecordDisplay').val();
+
+            var zDataRequest = { "searchContent": zSearchContent, "monthView": zMonthView, "yearView": zYearView, "departmentID": zDepartmentID, "amountRecordDisplay": zAmountRecordDisplay };
+
+            $.ajax({
+                type: 'POST',
+                url: "/KPI_BankAccount/CustomersOfDepartment?handler=LoadData",
+                data: JSON.stringify(zDataRequest),
+                contentType: "application/json",
+                dataType: "json",
+            })
+                .done(function (dataResponse) {
+                    $("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                    _DataView = dataResponse;
+                    LV_DisplayData();
+                    $("#LV_Waiting").css("display", "none");
+                })
+                .fail(function (error) {
+                    alert('Error : ' + error.responseText);
+                });
+        }
+        function LV_DisplayData() {
+            var zContent = "";
+            var zHeader = "";
+            var zStyle_RecordView = "";
+            var zHaveTotal = 0;
+            var k;
+            if (_DataView.status == "ERROR") {
+                $("#txt_MessageLog").html(_DataView.message);
+            }
+            else {
+                $("#Info_View").html(_DataView.title);
+
+                var n = _DataView.data.length;
+                k = 1;
+                if (n > 0) {
+                    if (_DataView.data[0][1] == "TOTAL") {
+                        k = 0;
+                        zHaveTotal = 1;
+                    }
+                }
+
+                for (i = 0; i < n; i++) {
+                    if (i == 0 && zHaveTotal == 1) {
+                        zStyle_RecordView = "font-weight:bold; color:navy";
+                    }
+                    else {
+                        zStyle_RecordView = "";
+                    }
+                    if (k == 0)
+                        zContent += "  <tr>";
+                    else
+                        zContent += "       <tr style='cursor:pointer' onclick=LV_Detail_LoadData_Ajax(" + i + ")>";
+
+                    zContent += "           <td style='" + zStyle_RecordView + "'>";
+                    zContent += "               <div> " + k + " </div>";
+                    zContent += "           </td>";
+                    zContent += "           <td style='" + zStyle_RecordView + "'>" + _DataView.data[i][0] + "</td>";
+                    zContent += "           <td style='" + zStyle_RecordView + "'>" + _DataView.data[i][1] + "</td>";
+                    zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][2] + "</td>";
+                    zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][3] + "</td>";
+                    zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][4] + "</td>";
+                    zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][5] + "</td>";
+                    zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _DataView.data[i][6] + "</td>";
+
+                    zContent += "       </tr>";
+                    k++;
+                }
+
+                $("#LV_DataBody").html(zContent);
+
+            }
+        }
+    </script>
+    <script>
+        var _Dataview_Detail;
+        function LV_Detail_LoadData_Ajax(Index) {
+            $("#Modal_Popup_Form").modal('show');
+            $("#Modal_Popup_Waiting").css("display", "");
+            $("#LV_Client_DataBody").html("");
+            var zMonthView = $('#MonthView').find(":selected").val();
+            var zYearView = $('#YearView').find(":selected").val();
+            $("#Modal_Popup_Title").html("Danh sách tài khoản trong <span style='color:red'> " + zMonthView + "-" + zYearView + " </span> của <span style='color:red'>" + _DataView.data[Index][1] + "</span> ");
+
+            var zMonthView = $('#MonthView').find(":selected").val();
+            var zYearView = $('#YearView').find(":selected").val();
+            var zCustomerID = _DataView.data[Index][0];
+
+            var zDataRequest = { "monthView": zMonthView, "yearView": zYearView, "customerID": zCustomerID };
+
+            $.ajax({
+                type: 'POST',
+                url: "/KPI_BankAccount/CustomersOfDepartment?handler=LoadCustomer",
+                data: JSON.stringify(zDataRequest),
+                contentType: "application/json",
+                dataType: "json",
+            })
+                .done(function (dataResponse) {
+                    //$("#txt_MessageLog").html(JSON.stringify(dataResponse));
+                    _Dataview_Detail = dataResponse;
+
+                    LV_Detail_DisplayData();
+                    $("#Modal_Popup_Waiting").css("display", "none");
+                })
+                .fail(function (error) {
+                    alert('Error : ' + error.responseText);
+                });
+        }
+        function LV_Detail_DisplayData() {
+            var zStyle_RecordView = "";
+            var n = _Dataview_Detail.data.length;
+            var zHead = "";
+            var zContent = "";
+            zHead += "<tr>";
+            zHead += " <th class='text-center'>STT</th> ";
+            zHead += " <th class='text-center'>Số tài khoản</th> ";
+            zHead += " <th class='text-center'>Nguyên tệ</th> ";
+            zHead += " <th class='text-center'>Loại tiền</th> ";
+            zHead += " <th class='text-center'>Tỷ giá</th> ";
+            zHead += " <th class='text-center'>Số tiền</th> ";
+            zHead += " <th class='text-center'>Giao dịch tại</th> ";
+            zHead += " <th class='text-center'>Phân bổ</th> ";
+            zHead += "</tr>";
+
+            for (i = 0; i < n; i++) {
+                if (_Dataview_Detail.data[i][7] == '10')
+                    zStyle_RecordView = "font-weight:bold; color:red";
+                else
+                    zStyle_RecordView = "";
+
+                zContent += "       <tr>";
+                zContent += "           <td >";
+                zContent += "               <div> " + (i + 1) + " </div>";
+                zContent += "               <div style='display:none'>";
+                zContent += "                   <div>" + _Dataview_Detail.data[i][0] + "</div>";
+                zContent += "               </div>";
+                zContent += "           </td>";
+                zContent += "           <td style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][1] + "</td>";
+                zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][2] + "</td>";
+                zContent += "           <td class='text-center' style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][3] + "</td>";
+                zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][4] + "</td>";
+                zContent += "           <td class='text-end' style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][5] + "</td>";
+                zContent += "           <td style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][6] + "</td>";
+                zContent += "           <td style='" + zStyle_RecordView + "'>" + _Dataview_Detail.data[i][8] + "</td>";
+                zContent += "       </tr>";
+
+            }
+            $("#LV_Client_Head").html(zHead);
+            $("#LV_Client_DataBody").html(zContent);
+
+        }
+
+    </script>

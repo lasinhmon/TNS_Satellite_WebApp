@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="FileUploadService\**" />
+    <Content Remove="FileUploadService\**" />
+    <EmbeddedResource Remove="FileUploadService\**" />
+    <None Remove="FileUploadService\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\libs\sidebars\sidebars.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TNS.Auth\TNS.Auth.csproj" />
+    <ProjectReference Include="..\TNS.DBConnection\TNS.DBConnection.csproj" />
+    <ProjectReference Include="..\TNS_AGR_DragonFruit\TNS_AGR_DragonFruit.csproj" />
+	<ProjectReference Include="..\TNS_AGR_PUC\TNS_AGR_PUC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Pages\Reports\" />
+  </ItemGroup>
+
+</Project>

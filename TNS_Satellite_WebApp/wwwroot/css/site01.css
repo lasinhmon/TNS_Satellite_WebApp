@@ -1,0 +1,43 @@
+html {
+  font-size: 14px;
+
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px white;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #caceda;
+    border-radius: 10px;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: white;
+    }
+
+.tns-form-title {
+    color: #00422b;
+    font-size: 26px;
+    font-weight: bold;
+}
+.tns-menusub
+{
+
+}
+
+.tns-menusub-itemtext {
+
+}
+    .tns-menusub-itemtext a {
+        color: #282828;
+    }
